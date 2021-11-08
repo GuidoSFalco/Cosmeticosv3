@@ -1,0 +1,190 @@
+﻿@page "/ordenes"
+
+<h3>IndiceOrdenes</h3>
+<br />
+<button class=" btn btn-success" @onclick="()=>Nuevo=true">Nuevo</button>
+<br />
+<table>
+    <thead>
+
+    <tr>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Telefono</th>
+        <th>Domicilio</th>
+       
+    </tr>
+    </thead>
+    @if (ordenes == null)
+    {
+        <tr>Cargando...</tr>
+    }
+    else if (ordenes.Count == 0)
+    {
+        <tr>No existen ordenes</tr>
+    }
+    else
+    {
+
+        @foreach (var item in ordenes)
+        {
+<tbody>
+
+<tr>
+    
+    <td>@item.Producto</td>
+    <td>@item.Cantidad</td>
+    <td>@item.Telefono</td>
+    <td>@item.Domicilio</td>
+</tr>
+    <td><button class="btn btn-success" @onclick="()=>Editar(item)">Editar</button></td>
+    <td><button class="btn btn-warning" @onclick="()=>Eliminar(item)">Eliminar</button></td>
+</tbody>
+        }
+    }
+</table>
+
+
+
+@if (Nuevo)
+{
+    @if (editar || eliminar)
+    {
+        Cancelar();
+        Nuevo = true;
+    }
+    <br />
+    <h3>Nueva orden</h3>
+    <br />
+    <input placeholder="Nombre" @bind="producto" />
+    <input placeholder="Compra" @bind="cantidad" />
+    <input placeholder="Compra" @bind="telefono" />
+    <input placeholder="Compra" @bind="domicilio" />
+    <button class="btn btn-success" @onclick="GrabarNuevo">Grabar</button>
+    <button class="btn btn-info" @onclick="Cancelar">Cancelar</button>
+}
+
+
+
+@if (editar)
+{
+
+    <br />
+    <h3>Editar orden</h3>
+    <br />
+    <p>Producto</p>
+    <input placeholder="Producto" @bind="producto" />
+    <input placeholder="Cantidad" @bind="cantidad" />
+    <input placeholder="Telefono" @bind="telefono" />
+    <input placeholder="Domicilio" @bind="domicilio" />
+    <button class="btn btn-success" @onclick="GrabarEditar">Grabar</button>
+    <button class="btn btn-info" @onclick="Cancelar">Cancelar</button>
+}
+
+@if (eliminar)
+{
+
+    <br />
+    <h3>Eliminar orden</h3>
+    <br />
+    <input placeholder="Producto" @bind="producto" />
+    <input placeholder="Cantidad" @bind="cantidad" />
+    <input placeholder="Telefono" @bind="telefono" />
+    <input placeholder="Domicilio" @bind="domicilio" />
+    <button class="btn btn-success" @onclick="GrabarEliminar">Eliminar</button>
+    <button class="btn btn-info" @onclick="Cancelar">Cancelar</button>
+}
+
+@code {
+    //List<Orden> ordenes = new List<Orden>();
+    List<Cosmeticos.Shared.Data.Entidades.Orden> ordenes;
+    string producto = "";
+    int cantidad;
+    int telefono;
+    string domicilio = "";
+
+
+
+    bool Nuevo = false;
+    bool editar = false;
+    bool eliminar = false;
+    Cosmeticos.Shared.Data.Entidades.Orden editarOrden;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        ordenes = new()
+        {
+            new Cosmeticos.Shared.Data.Entidades.Orden() { Producto = "Jabon", Cantidad = 2, Telefono = 4638926, Domicilio = "alberdi 134" },
+            new Cosmeticos.Shared.Data.Entidades.Orden() { Producto = "asdf", Cantidad = 4, Telefono = 4784927, Domicilio = "ewhsudvn 325" },
+        };
+    }
+    private void GrabarNuevo()
+    {
+        Cosmeticos.Shared.Data.Entidades.Orden orden = new();
+        orden.Producto = producto;
+        orden.Cantidad = cantidad;
+        orden.Telefono = telefono;
+        orden.Domicilio = domicilio;
+        ordenes.Add(orden);
+        Cancelar();
+    }
+
+    private void Editar(Cosmeticos.Shared.Data.Entidades.Orden ordenEditar)
+    {
+        if (Nuevo || eliminar)
+        {
+            Cancelar();
+            editar = true;
+        }
+        editar = true;
+        producto = ordenEditar.Producto;
+        cantidad = ordenEditar.Cantidad;
+        telefono = ordenEditar.Telefono;
+        domicilio = ordenEditar.Domicilio;
+
+        editarOrden = ordenEditar;
+    }
+
+
+    private void GrabarEditar()
+    {
+        ordenes.Remove(editarOrden);
+        ordenes.Add(new Cosmeticos.Shared.Data.Entidades.Orden() { Producto = producto, Cantidad = cantidad, Telefono = telefono, Domicilio = domicilio });
+        Cancelar();
+    }
+
+    private void Eliminar(Cosmeticos.Shared.Data.Entidades.Orden ordenEliminar)
+    {
+        if (Nuevo || editar)
+        {
+            Cancelar();
+            eliminar = true;
+        }
+        eliminar = true;
+        producto = ordenEliminar.Producto;
+        cantidad = ordenEliminar.Cantidad;
+        telefono = ordenEliminar.Telefono;
+        domicilio = ordenEliminar.Domicilio;
+        editarOrden = ordenEliminar;
+    }
+
+    private void GrabarEliminar()
+    {
+        ordenes.Remove(editarOrden);
+        Cancelar();
+    }
+
+    private void Cancelar()
+    {
+        editarOrden = null;
+        Nuevo = false;
+        editar = false;
+        eliminar = false;
+        producto = "";
+        cantidad = 0;
+        telefono = 0;
+        domicilio = "";
+    }
+}

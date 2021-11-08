@@ -1,19 +1,19 @@
 ﻿@page "/ordenes"
 
-<h3>IndiceOrdenes</h3>
+<h3>Ordenes</h3>
 <br />
 <button class=" btn btn-success" @onclick="()=>Nuevo=true">Nuevo</button>
 <br />
 <table>
     <thead>
 
-    <tr>
-        <th>Producto</th>
-        <th>Cantidad</th>
-        <th>Telefono</th>
-        <th>Domicilio</th>
-       
-    </tr>
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Telefono</th>
+            <th>Domicilio</th>
+
+        </tr>
     </thead>
     @if (ordenes == null)
     {
@@ -28,21 +28,23 @@
 
         @foreach (var item in ordenes)
         {
-<tbody>
+            <tbody>
 
-<tr>
-    
-    <td>@item.Producto</td>
-    <td>@item.Cantidad</td>
-    <td>@item.Telefono</td>
-    <td>@item.Domicilio</td>
-</tr>
-    <td><button class="btn btn-success" @onclick="()=>Editar(item)">Editar</button></td>
-    <td><button class="btn btn-warning" @onclick="()=>Eliminar(item)">Eliminar</button></td>
-</tbody>
+                <tr>
+
+                    <td>@item.Producto</td>
+                    <td>@item.Cantidad</td>
+                    <td>@item.Telefono</td>
+                    <td>@item.Domicilio</td>
+                </tr>
+            <td><button class="btn btn-success" @onclick="()=>Editar(item)">Editar</button></td>
+            <td><button class="btn btn-warning" @onclick="()=>Eliminar(item)">Eliminar</button></td>
+            </tbody>
         }
     }
 </table>
+<br />
+            <p>@error</p>
 
 
 
@@ -72,7 +74,6 @@
     <br />
     <h3>Editar orden</h3>
     <br />
-    <p>Producto</p>
     <input placeholder="Producto" @bind="producto" />
     <input placeholder="Cantidad" @bind="cantidad" />
     <input placeholder="Telefono" @bind="telefono" />
@@ -97,6 +98,7 @@
 
 @code {
     //List<Orden> ordenes = new List<Orden>();
+    string error;
     List<Cosmeticos.Shared.Data.Entidades.Orden> ordenes;
     string producto = "";
     int cantidad;
@@ -122,13 +124,21 @@
     }
     private void GrabarNuevo()
     {
-        Cosmeticos.Shared.Data.Entidades.Orden orden = new();
-        orden.Producto = producto;
-        orden.Cantidad = cantidad;
-        orden.Telefono = telefono;
-        orden.Domicilio = domicilio;
-        ordenes.Add(orden);
-        Cancelar();
+        if (producto=="" || cantidad==0 ||telefono==0 ||domicilio=="")
+        {
+            error = "Error, debe ingresar todos los datos";
+        }
+        else
+        {
+            Cosmeticos.Shared.Data.Entidades.Orden orden = new();
+            orden.Producto = producto;
+            orden.Cantidad = cantidad;
+            orden.Telefono = telefono;
+            orden.Domicilio = domicilio;
+            ordenes.Add(orden);
+            Cancelar();
+            error = "";
+        }
     }
 
     private void Editar(Cosmeticos.Shared.Data.Entidades.Orden ordenEditar)

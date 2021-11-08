@@ -1,7 +1,7 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace OrdenesCosmeticos.Client.Servicios
+namespace Cosmeticos.Client.Servicios
 {
     public class HttpRespuesta<T>
     {
@@ -9,7 +9,9 @@ namespace OrdenesCosmeticos.Client.Servicios
         public bool Error { get; }
         public HttpResponseMessage httpResponseMessage { get; }
 
-        public HttpRespuesta(T respuesta, bool error, HttpResponseMessage httpResponseMessage)
+        public HttpRespuesta(T respuesta,
+                             bool error,
+                             HttpResponseMessage httpResponseMessage)
         {
             Respuesta = respuesta;
             Error = error;

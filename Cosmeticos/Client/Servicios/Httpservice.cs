@@ -6,20 +6,20 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace OrdenesCosmeticos.Client.Servicios
+namespace Cosmeticos.Client.Servicios
 {
-    public class Httpservice : IHttpservice
+    public class HttpService : IHttpService
     {
-        private readonly HttpClient http;
+        private readonly HttpClient httpClient;
 
-        public Httpservice(HttpClient http)
+        public HttpService(HttpClient http)
         {
-            this.http = http;
+            this.httpClient = http;
         }
 
         public async Task<HttpRespuesta<T>> Get<T>(string url)
         {
-            var respuestaHttp = await http.GetAsync(url);
+            var respuestaHttp = await httpClient.GetAsync(url);
             if (respuestaHttp.IsSuccessStatusCode)
             {
                 var respuesta = await DeserializarRespuesta<T>(respuestaHttp);
@@ -33,10 +33,6 @@ namespace OrdenesCosmeticos.Client.Servicios
                                             true,
                                             respuestaHttp);
             }
-
-
-            
-
         }
 
         public async Task<HttpRespuesta<object>> Post<T>(string url, T enviar)
@@ -47,19 +43,44 @@ namespace OrdenesCosmeticos.Client.Servicios
                 var enviarContent = new StringContent(enviarJSON,
                                                       Encoding.UTF8,
                                                       "application/json");
-                var respuestaHTTP = await http.PostAsync(url, enviarContent);
+                var respuestaHTTP = await httpClient.PostAsync(url, enviarContent);
 
                 return new HttpRespuesta<object>(null,
                                                  !respuestaHTTP.IsSuccessStatusCode,
                                                  respuestaHTTP);
             }
-            catch (System.Exception) { throw; }
+            catch (System.Exception e) { throw; }
+        }
+
+        public async Task<HttpRespuesta<object>> Put<T>(string url, T enviar)
+        {
+            try
+            {
+                var enviarJSON = JsonSerializer.Serialize(enviar);
+                var enviarContent = new StringContent(enviarJSON,
+                                                      Encoding.UTF8,
+                                                      "application/json");
+                var respuestaHTTP = await httpClient.PutAsync(url, enviarContent);
+
+                return new HttpRespuesta<object>(null,
+                                                 !respuestaHTTP.IsSuccessStatusCode,
+                                                 respuestaHTTP);
+            }
+            catch (System.Exception e) { throw; }
+        }
+
+        public async Task<HttpRespuesta<object>> Delete(string url)
+        {
+            var respuestaHTTP = await httpClient.DeleteAsync(url);
+            return new HttpRespuesta<object>(null,
+                                             !respuestaHTTP.IsSuccessStatusCode,
+                                             respuestaHTTP);
         }
         private async Task<T> DeserializarRespuesta<T>(HttpResponseMessage httpRespuesta)
         {
-                var RepuestaString = await httpRespuesta.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<T>(RepuestaString,
-                    new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+            var RepuestaString = await httpRespuesta.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<T>(RepuestaString,
+                new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
         }
     }
 }

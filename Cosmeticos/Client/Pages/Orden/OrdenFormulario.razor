@@ -1,16 +1,31 @@
-﻿@*
-    
-<EditForm Model="Orden" OnInvalidSubmit="onValidSubmit">
+﻿<EditForm Model="Orden" OnValidSubmit="onValidSubmit">
+    <DataAnnotationsValidator />
     <div class="form-group">
-        <label>Usuario</label>
+        <label>Producto</label>
         <div>
-            <InputText class="form-control" @bind-Value="@Orden.Usuario" />
+            <InputText class="form-control" @bind-Value="@Orden.Producto" />
+            <ValidationMessage For="@(() => Orden.Producto)" />
         </div>
     </div>
     <div class="form-group">
-        <label>Compra</label>
+        <label>Cantidad</label>
         <div>
-            <InputText class="form-control" @bind-Value="@Orden.Compra" />
+            <input placeholder="Compra" @bind="@Orden.Cantidad" />
+            <ValidationMessage For="@(() => Orden.Cantidad)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Telefono</label>
+        <div>
+            <input placeholder="Compra" @bind="@Orden.Telefono" />
+            <ValidationMessage For="@(() => Orden.Telefono)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Domicilio</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@Orden.Domicilio" />
+            <ValidationMessage For="@(() => Orden.Domicilio)" />
         </div>
     </div>
     <button class="btn btn-primary" type="submit">Guardar</button>
@@ -22,4 +37,4 @@
     [Parameter] public EventCallback onValidSubmit { get; set; }
     [Parameter] public EventCallback onCancel { get; set; }
 }
-*@
+

@@ -1,11 +1,11 @@
 ﻿@page "/ordenes"
-
-<h3>Ordenes</h3>
+@inject IHttpService http
+<h3 class="container, text-center">Cosmeticos Hernando</h3>
 <br />
-<button class=" btn btn-success" @onclick="()=>Nuevo=true">Nuevo</button>
+<a class=" btn btn-success" href="/ordenes/crear">Nuevo</a>
 <br />
-<table>
-    <thead>
+<table class="table-secondary">
+    
 
         <tr>
             <th>Producto</th>
@@ -14,7 +14,7 @@
             <th>Domicilio</th>
 
         </tr>
-    </thead>
+    
     @if (ordenes == null)
     {
         <tr>Cargando...</tr>
@@ -28,7 +28,7 @@
 
         @foreach (var item in ordenes)
         {
-            <tbody>
+            
 
                 <tr>
 
@@ -36,17 +36,24 @@
                     <td>@item.Cantidad</td>
                     <td>@item.Telefono</td>
                     <td>@item.Domicilio</td>
+                    <td><a class="btn btn-success" href="/ordenes/editar/@item.Id">Editar</a></td>
+                    <td><button class="btn btn-warning" @onclick="()=>Eliminar(item)">Eliminar</button></td>
                 </tr>
-            <td><button class="btn btn-success" @onclick="()=>Editar(item)">Editar</button></td>
-            <td><button class="btn btn-warning" @onclick="()=>Eliminar(item)">Eliminar</button></td>
-            </tbody>
+            
         }
     }
 </table>
 <br />
-            <p>@error</p>
+<p>@error</p>
 
-
+<Confirmacion @ref="confirmacion"
+              onConfirm="GrabarEliminar"
+              onCancel="Cancelar"
+              Titulo="BORRAR"
+              textCancelar="Salir"
+              textOk="Aceptar">
+    <div>¿Desea eliminar la orden @eliminarOrden.Producto?</div>
+</Confirmacion>
 
 @if (Nuevo)
 {
@@ -100,6 +107,8 @@
     //List<Orden> ordenes = new List<Orden>();
     string error;
     List<Cosmeticos.Shared.Data.Entidades.Orden> ordenes;
+    Confirmacion confirmacion;
+    Cosmeticos.Shared.Data.Entidades.Orden eliminarOrden;
     string producto = "";
     int cantidad;
     int telefono;
@@ -112,19 +121,34 @@
     bool eliminar = false;
     Cosmeticos.Shared.Data.Entidades.Orden editarOrden;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
+        await Leer();
+    }
 
+    private async Task Leer()
+    {
+        var respuestaHttp = await http.Get<List<Cosmeticos.Shared.Data.Entidades.Orden>>("api/ordenes");
+        if (!respuestaHttp.Error)
+        {
+            ordenes = respuestaHttp.Respuesta;
+        }
+        @*
+            
         ordenes = new()
         {
             new Cosmeticos.Shared.Data.Entidades.Orden() { Producto = "Jabon", Cantidad = 2, Telefono = 4638926, Domicilio = "alberdi 134" },
             new Cosmeticos.Shared.Data.Entidades.Orden() { Producto = "asdf", Cantidad = 4, Telefono = 4784927, Domicilio = "ewhsudvn 325" },
         };
+        *@
     }
+
     private void GrabarNuevo()
     {
-        if (producto=="" || cantidad==0 ||telefono==0 ||domicilio=="")
+        
+            
+        if (producto == "" || cantidad == 0 || telefono == 0 || domicilio == "")
         {
             error = "Error, debe ingresar todos los datos";
         }
@@ -139,6 +163,7 @@
             Cancelar();
             error = "";
         }
+        
     }
 
     private void Editar(Cosmeticos.Shared.Data.Entidades.Orden ordenEditar)
@@ -167,6 +192,10 @@
 
     private void Eliminar(Cosmeticos.Shared.Data.Entidades.Orden ordenEliminar)
     {
+        confirmacion.Mostrar();
+        eliminarOrden = ordenEliminar;
+        @*
+            
         if (Nuevo || editar)
         {
             Cancelar();
@@ -178,16 +207,26 @@
         telefono = ordenEliminar.Telefono;
         domicilio = ordenEliminar.Domicilio;
         editarOrden = ordenEliminar;
+        *@
     }
 
-    private void GrabarEliminar()
+    private async Task GrabarEliminar()
     {
-        ordenes.Remove(editarOrden);
+        var respuesta = await http.Delete($"api/ordenes/{eliminarOrden.Id}");
+        if (respuesta.Error)
+        {
+            var body = await respuesta.GetBody();
+        }
         Cancelar();
+        await Leer();
     }
 
     private void Cancelar()
     {
+        confirmacion.Ocultar();
+        eliminarOrden = null;
+        @*
+            
         editarOrden = null;
         Nuevo = false;
         editar = false;
@@ -196,5 +235,6 @@
         cantidad = 0;
         telefono = 0;
         domicilio = "";
+        *@
     }
 }

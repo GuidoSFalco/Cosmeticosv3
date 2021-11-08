@@ -33,6 +33,7 @@ namespace Cosmeticos.Server
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "OrdenesCosmeticos", Version = "v1" });
             });
 
+
             services.AddControllersWithViews();
             //services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationdbContext>().AddDefaultTokenProviders();
 

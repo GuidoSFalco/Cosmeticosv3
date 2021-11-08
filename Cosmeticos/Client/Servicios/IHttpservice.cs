@@ -1,10 +1,12 @@
 ﻿using System.Threading.Tasks;
 
-namespace OrdenesCosmeticos.Client.Servicios
+namespace Cosmeticos.Client.Servicios
 {
-    public interface IHttpservice
+    public interface IHttpService
     {
+        Task<HttpRespuesta<object>> Delete(string url);
         Task<HttpRespuesta<T>> Get<T>(string url);
         Task<HttpRespuesta<object>> Post<T>(string url, T enviar);
+        Task<HttpRespuesta<object>> Put<T>(string url, T enviar);
     }
 }

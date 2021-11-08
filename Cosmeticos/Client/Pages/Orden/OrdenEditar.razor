@@ -1,6 +1,6 @@
-﻿@*
-@page "/ordenes/editar/{OrdenId}/{Usuario}/{Compra}"
+﻿@page "/ordenes/editar/{OrdenId:int}"
 @inject NavigationManager navigationManager
+@inject IHttpService http
 
 <h3>Modificar orden</h3>
 <OrdenFormulario onValidSubmit="GrabarModificacion" Orden="orden" onCancel="Cancelar" />
@@ -9,22 +9,47 @@
 @code {
     private Orden orden;
     [Parameter] public int OrdenId { get; set; }
-    [Parameter] public string usuario { get; set; }
-    [Parameter] public string compra { get; set; }
+    [Parameter] public string producto { get; set; }
+    [Parameter] public int cantidad { get; set; }
+    [Parameter] public int telefono { get; set; }
+    [Parameter] public string domicilio { get; set; }
 
     protected async override Task OnInitializedAsync()
     {
+        await MostrarOrden();
+        @*
+            
         orden = new()
         {
             Id = OrdenId,
-            Usuario = usuario,
-            Compra = compra
+            Producto = producto,
+            Cantidad = cantidad,
+            Telefono = telefono,
+            Domicilio = domicilio
         };
+        *@
+    }
+
+    private async Task MostrarOrden()
+    {
+        var httpRespuesta = await http.Get<Orden>($"api/ordenes/{OrdenId}");
+        if (httpRespuesta.Error)
+        {
+            var body = await httpRespuesta.GetBody();
+        }
+        else
+        {
+            orden = httpRespuesta.Respuesta;
+        }
     }
 
     private async Task GrabarModificacion()
     {
-        Console.WriteLine($"Graba modificacion{orden.Usuario}");
+        var httpRespuesta = await http.Put<Orden>($"api/ordenes/{OrdenId}",orden);
+        if (httpRespuesta.Error)
+        {
+            var body = await httpRespuesta.GetBody();
+        }
         navigationManager.NavigateTo("/ordenes");
     }
     private async Task Cancelar()
@@ -32,5 +57,5 @@
         navigationManager.NavigateTo("/ordenes");
     }
 }
-*@
+
 
